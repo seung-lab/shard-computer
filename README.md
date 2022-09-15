@@ -2,7 +2,7 @@
 
 
 # shard-computer
-Perform accelerated shard hash computation for Neuroglancer Precomputed shards.
+Perform accelerated shard hash computation for [Neuroglancer Precomputed shards](https://github.com/google/neuroglancer/blob/master/src/neuroglancer/datasource/precomputed/sharded.md#sharding-specification).
 
 ```python
 import shardcomputer
