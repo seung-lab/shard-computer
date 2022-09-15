@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import pytest
 import numpy as np
 import mmh3
@@ -38,6 +40,27 @@ def test_shard_number(preshift_bits, shard_bits, minishard_bits):
 		cv_shard_no = spec.compute_shard_location(label).shard_number
 		sc_shard_no = shardcomputer.shard_number(label, preshift_bits, shard_bits, minishard_bits)
 		assert cv_shard_no == sc_shard_no, label
+
+@pytest.mark.parametrize('preshift_bits', [0,1,2])
+@pytest.mark.parametrize('shard_bits', [0,1,11])
+@pytest.mark.parametrize('minishard_bits', [0,1,7])
+def test_assign_labels_to_shards(preshift_bits, shard_bits, minishard_bits):
+	spec = ShardingSpecification(
+		'neuroglancer_uint64_sharded_v1',
+		preshift_bits=preshift_bits, 
+    	hash='murmurhash3_x86_128', 
+    	minishard_bits=minishard_bits, 
+    	shard_bits=shard_bits, 
+	)
+
+	cv_label_map = defaultdict(list)
+	arr = np.random.randint(0, 100000000, size=(10000,), dtype=np.uint64)
+	for label in arr:
+		cv_shard_no = spec.compute_shard_location(label).shard_number
+		cv_label_map[cv_shard_no].append(label)
+
+	sc_label_map = shardcomputer.assign_labels_to_shards(arr, preshift_bits, shard_bits, minishard_bits)
+	assert sc_label_map == cv_label_map
 
 @pytest.mark.parametrize('preshift_bits', [0,1,2])
 @pytest.mark.parametrize('shard_bits', [0,8,11])
