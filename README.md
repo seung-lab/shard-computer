@@ -19,4 +19,11 @@ shard_no = shardcomputer.shard_number(label, preshift_bits, shard_bits, minishar
 shard_no_set = shardcomputer.unique_shard_numbers(
 	label, preshift_bits, shard_bits, minishard_bits
 )
+
+# Returns shard number -> label list dict
+# e.g. { '02f8': [ 129, 1294, 1020 ] }
+shard_no_to_labels = shardcomputer.assign_labels_to_shards(
+	label, preshift_bits, shard_bits, minishard_bits
+)
+
 ```
