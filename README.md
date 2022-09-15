@@ -1,2 +1,19 @@
 # shard-computer
-Perform accelerated shard hash computation on numpy arrays.
+Perform accelerated shard hash computation for Neuroglancer Precomputed shards.
+
+```python
+import shardcomputer
+
+preshift_bits = 0
+shard_bits = 11
+minishard_bits = 8
+
+label = 12949142
+
+shard_no = shardcomputer.shard_number(label, preshift_bits, shard_bits, minishard_bits)
+
+# let arr be a uint64 numpy array of labels
+shard_no_set = shardcomputer.unique_shard_numbers(
+	label, preshift_bits, shard_bits, minishard_bits
+)
+```
