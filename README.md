@@ -28,3 +28,14 @@ shard_no_to_labels = shardcomputer.assign_labels_to_shards(
 )
 
 ```
+
+## Install
+
+```
+pip install shard-computer
+```
+
+## Credits
+
+Thank you to Austin Appleby for placing MurMurhash3 into the public domain.
+
