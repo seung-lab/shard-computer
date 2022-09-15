@@ -1,0 +1,4 @@
+mmh3
+pytest
+numpy
+pybind11

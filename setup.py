@@ -16,7 +16,7 @@ ext_modules = [
 
 setuptools.setup(
   name="shard-computer",
-  version="8.11.0",
+  version="1.0.0",
   setup_requires=[
     'numpy', 
     'pybind11',
@@ -34,11 +34,11 @@ setuptools.setup(
   long_description=read('README.md'),
   long_description_content_type="text/markdown",
   license = "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
-  keywords = "neuroglancer sharding MurmurHash3",
+  keywords = "neuroglancer sharding igneous cloud-volume MurmurHash3",
   url = "https://github.com/seung-lab/shard-computer/",
   classifiers=[
     "Intended Audience :: Developers",
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
