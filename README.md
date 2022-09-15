@@ -15,13 +15,14 @@ label = 12949142
 
 shard_no = shardcomputer.shard_number(label, preshift_bits, shard_bits, minishard_bits)
 
-# let arr be a uint64 numpy array of labels
+# let labels be a uint64 numpy array of labels
+# e.g. set(['4d2'])
 shard_no_set = shardcomputer.unique_shard_numbers(
-	label, preshift_bits, shard_bits, minishard_bits
+	labels, preshift_bits, shard_bits, minishard_bits
 )
 
 # Returns shard number -> label list dict
-# e.g. { '02f8': [ 129, 1294, 1020 ] }
+# e.g. {'4d2': [12949142]}
 shard_no_to_labels = shardcomputer.assign_labels_to_shards(
 	label, preshift_bits, shard_bits, minishard_bits
 )
