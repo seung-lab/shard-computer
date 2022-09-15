@@ -1,3 +1,6 @@
+![Automated Tests](https://github.com/github/docs/actions/workflows/run_tests.yml/badge.svg)
+
+
 # shard-computer
 Perform accelerated shard hash computation for Neuroglancer Precomputed shards.
 
