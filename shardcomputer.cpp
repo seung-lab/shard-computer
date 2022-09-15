@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <cstdint>
 #include <sstream>
+#include <unordered_map>
+#include <vector>
 
 #include "MurmurHash3.h"
 
@@ -47,6 +49,34 @@ py::str shard_number(
 	return strm.str();
 }
 
+auto assign_labels_to_shards(
+	const py::array_t<uint64_t, py::array::c_style> labels, 
+	const uint64_t preshift_bits, 
+	const uint64_t shard_bits, 
+	const uint64_t minishard_bits
+) {
+	const uint64_t size = labels.size();
+	
+	auto labels_view = labels.unchecked<1>();
+	uint64_t shard_mask = compute_shard_mask(shard_bits, minishard_bits);
+
+	std::unordered_map<std::string, std::vector<uint64_t>> all_labels;
+	const int zfill = (shard_bits + 3) / 4;
+	std::stringstream strm;
+
+	for (uint64_t i = 0; i < size; i++) {
+		uint64_t chunk_id = labels_view(i) >> preshift_bits;
+		chunk_id = MurmurHash3_x86_64(chunk_id, /*seed=*/0);
+		chunk_id = (chunk_id & shard_mask) >> minishard_bits;
+		strm.str("");
+		strm.clear();
+		strm << std::setfill('0') << std::setw(zfill) << std::hex << chunk_id;
+		all_labels[strm.str()].push_back(labels_view(i));
+	}
+
+	return all_labels;
+}
+
 py::set unique_shard_numbers(
 	const py::array_t<uint64_t, py::array::c_style> labels, 
 	const uint64_t preshift_bits, 
@@ -83,6 +113,9 @@ PYBIND11_MODULE(shardcomputer, m) {
 
     m.def("unique_shard_numbers", &unique_shard_numbers, 
     	"Compute the set of unique shard file hashes from a numpy array of labels. Returns set.");
+
+	m.def("assign_labels_to_shards", &assign_labels_to_shards, 
+    	"From an array of labels, create a dictionary of shardnumber -> list of labels.");
 
 	m.def("MurmurHash3_x86_64", &MurmurHash3_x86_64, 
     	"Compute the MurmurHash3_x86_64 of a uint64.");

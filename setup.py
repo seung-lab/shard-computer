@@ -10,7 +10,7 @@ ext_modules = [
     Pybind11Extension(
         "shardcomputer",
         [ "MurmurHash3.cpp", "shardcomputer.cpp" ] ,  # Sort source files for reproducibility
-        cxx_std=11,
+        cxx_std=14,
     ),
 ]
 
