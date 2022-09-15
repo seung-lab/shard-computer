@@ -1,4 +1,4 @@
-![Automated Tests](https://github.com/github/docs/actions/workflows/run_tests.yml/badge.svg)
+![Automated Tests](https://github.com/github/docs/actions/workflows/run_tests.yml/badge.svg) [![PyPI version](https://badge.fury.io/py/shard-computer.svg)](https://badge.fury.io/py/shard-computer)
 
 
 # shard-computer
