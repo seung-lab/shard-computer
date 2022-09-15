@@ -2,3 +2,4 @@ mmh3
 pytest
 numpy
 pybind11
+cloud-volume
