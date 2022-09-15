@@ -1,0 +1,4 @@
+include LICENSE
+include MurmurHash3.h
+include MurmurHash3.cpp
+include shardcomputer.cpp
