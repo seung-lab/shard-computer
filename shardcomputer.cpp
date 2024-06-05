@@ -25,10 +25,18 @@ namespace py = pybind11;
 
 //   return ShardLocation(shard_number, minishard_number, remainder)
 
+// chunkid >> preshift_bits
+// shard mask | minishard mask
+
 uint64_t compute_shard_mask(const uint64_t shard_bits, const uint64_t minishard_bits) {
     uint64_t movement = minishard_bits + shard_bits;
     uint64_t shard_mask = ~((0xffffffffffffffff >> movement) << movement);
     return ((shard_mask >> minishard_bits) << minishard_bits);
+}
+
+uint64_t compute_minishard_mask(const uint64_t minishard_bits) {
+    uint64_t movement = minishard_bits;
+    return ~((0xffffffffffffffff >> movement) << movement);
 }
 
 py::str shard_number(
@@ -77,6 +85,55 @@ auto assign_labels_to_shards(
 	return all_labels;
 }
 
+auto assign_labels_to_shards_and_minishards(
+	const py::array_t<uint64_t, py::array::c_style> labels, 
+	const uint64_t preshift_bits, 
+	const uint64_t shard_bits, 
+	const uint64_t minishard_bits,
+	const bool hash = true
+) {
+	const uint64_t size = labels.size();
+	
+	auto labels_view = labels.unchecked<1>();
+	uint64_t shard_mask = compute_shard_mask(shard_bits, minishard_bits);
+	uint64_t minishard_mask = compute_minishard_mask(minishard_bits);
+	uint64_t minishard_no = 0;
+
+	std::unordered_map<std::string, std::unordered_map<uint32_t, std::vector<uint64_t>>> all_labels;
+	const int zfill = (shard_bits + 3) / 4;
+	std::stringstream shard_no;
+
+	if (hash) {
+		for (uint64_t i = 0; i < size; i++) {
+			uint64_t chunk_id = labels_view(i) >> preshift_bits;
+			chunk_id = MurmurHash3_x86_64(chunk_id, /*seed=*/0);
+			chunk_id = (chunk_id & shard_mask) >> minishard_bits;
+			shard_no.str("");
+			shard_no.clear();
+			shard_no << std::setfill('0') << std::setw(zfill) << std::hex << chunk_id;
+
+			minishard_no = chunk_id & minishard_mask;
+
+			all_labels[shard_no.str()][minishard_no].push_back(labels_view(i));
+		}
+	}
+	else {
+		for (uint64_t i = 0; i < size; i++) {
+			uint64_t chunk_id = labels_view(i) >> preshift_bits;
+			chunk_id = (chunk_id & shard_mask) >> minishard_bits;
+			shard_no.str("");
+			shard_no.clear();
+			shard_no << std::setfill('0') << std::setw(zfill) << std::hex << chunk_id;
+
+			minishard_no = chunk_id & minishard_mask;
+
+			all_labels[shard_no.str()][minishard_no].push_back(labels_view(i));
+		}
+	}
+
+	return all_labels;
+}
+
 py::set unique_shard_numbers(
 	const py::array_t<uint64_t, py::array::c_style> labels, 
 	const uint64_t preshift_bits, 
@@ -116,6 +173,10 @@ PYBIND11_MODULE(shardcomputer, m) {
 
 	m.def("assign_labels_to_shards", &assign_labels_to_shards, 
     	"From an array of labels, create a dictionary of shardnumber -> list of labels.");
+
+	m.def("assign_labels_to_shards_and_minishards", &assign_labels_to_shards_and_minishards, 
+    	"From an array of integer labels, create a Dict[shard_number] -> Dict[minishard_number] -> List[labels].");
+
 
 	m.def("MurmurHash3_x86_64", &MurmurHash3_x86_64, 
     	"Compute the MurmurHash3_x86_64 of a uint64.");
