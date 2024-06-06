@@ -63,6 +63,42 @@ def test_assign_labels_to_shards(preshift_bits, shard_bits, minishard_bits):
     assert sc_label_map == cv_label_map
 
 @pytest.mark.parametrize('preshift_bits', [0,1,2])
+@pytest.mark.parametrize('shard_bits', [0,1,11])
+@pytest.mark.parametrize('minishard_bits', [0,1,7])
+def test_assign_labels_to_shards_and_minishards(preshift_bits, shard_bits, minishard_bits):
+    spec = ShardingSpecification(
+        'neuroglancer_uint64_sharded_v1',
+        preshift_bits=preshift_bits, 
+        hash='murmurhash3_x86_128', 
+        minishard_bits=minishard_bits, 
+        shard_bits=shard_bits, 
+    )
+
+    cv_label_map = {}
+    arr = np.random.randint(0, 100000000, size=(10000,), dtype=np.uint64)
+    for label in arr:
+        loc = spec.compute_shard_location(label)
+        if loc.shard_number not in cv_label_map:
+            cv_label_map[loc.shard_number] = {}
+
+        if loc.minishard_number not in cv_label_map[loc.shard_number]:
+            cv_label_map[loc.shard_number][loc.minishard_number] = []
+
+        cv_label_map[loc.shard_number][loc.minishard_number].append(label)
+
+    sc_label_map = shardcomputer.assign_labels_to_shards_and_minishards(arr, preshift_bits, shard_bits, minishard_bits, True)
+
+    for shard_no, minishards in sc_label_map.items():
+        for minishard_no, labels in minishards.items():
+            labels.sort()
+
+    for shard_no, minishards in cv_label_map.items():
+        for minishard_no, labels in minishards.items():
+            labels.sort()
+
+    assert sc_label_map == cv_label_map
+
+@pytest.mark.parametrize('preshift_bits', [0,1,2])
 @pytest.mark.parametrize('shard_bits', [0,8,11])
 @pytest.mark.parametrize('minishard_bits', [0,4,7])
 def test_unique_shard_numbers(preshift_bits, shard_bits, minishard_bits):
