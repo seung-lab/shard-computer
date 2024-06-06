@@ -107,12 +107,11 @@ auto assign_labels_to_shards_and_minishards(
 		for (uint64_t i = 0; i < size; i++) {
 			uint64_t chunk_id = labels_view(i) >> preshift_bits;
 			chunk_id = MurmurHash3_x86_64(chunk_id, /*seed=*/0);
+			minishard_no = chunk_id & minishard_mask;
 			chunk_id = (chunk_id & shard_mask) >> minishard_bits;
 			shard_no.str("");
 			shard_no.clear();
 			shard_no << std::setfill('0') << std::setw(zfill) << std::hex << chunk_id;
-
-			minishard_no = chunk_id & minishard_mask;
 
 			all_labels[shard_no.str()][minishard_no].push_back(labels_view(i));
 		}
@@ -120,12 +119,11 @@ auto assign_labels_to_shards_and_minishards(
 	else {
 		for (uint64_t i = 0; i < size; i++) {
 			uint64_t chunk_id = labels_view(i) >> preshift_bits;
+			minishard_no = chunk_id & minishard_mask;
 			chunk_id = (chunk_id & shard_mask) >> minishard_bits;
 			shard_no.str("");
 			shard_no.clear();
 			shard_no << std::setfill('0') << std::setw(zfill) << std::hex << chunk_id;
-
-			minishard_no = chunk_id & minishard_mask;
 
 			all_labels[shard_no.str()][minishard_no].push_back(labels_view(i));
 		}
