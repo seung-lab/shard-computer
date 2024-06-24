@@ -16,12 +16,12 @@ ext_modules = [
 
 setuptools.setup(
   name="shard-computer",
-  version="1.1.1",
+  version="1.2.1",
   setup_requires=[
     'numpy', 
     'pybind11',
   ],
-  python_requires=">=3.7.0,<4.0.0",
+  python_requires=">=3.8.0,<4.0.0",
   author="William Silversmith",
   author_email="ws9@princeton.edu",
   packages=setuptools.find_packages(),
