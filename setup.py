@@ -16,7 +16,7 @@ ext_modules = [
 
 setuptools.setup(
   name="shard-computer",
-  version="1.2.1",
+  version="1.2.2",
   setup_requires=[
     'numpy', 
     'pybind11',
@@ -42,11 +42,11 @@ setuptools.setup(
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
     "Intended Audience :: Science/Research",
     "Operating System :: POSIX",
