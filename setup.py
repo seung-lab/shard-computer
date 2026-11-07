@@ -16,7 +16,7 @@ ext_modules = [
 
 setuptools.setup(
   name="shard-computer",
-  version="1.2.2",
+  version="1.2.5",
   setup_requires=[
     'numpy', 
     'pybind11',
